@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <title>invento - Inventory Table</title>
+        <link rel="stylesheet" href="/css/w3css.css">
+        <link rel="stylesheet" href="/css/custom.css">
+        <script src="/js/jquery.min.js"></script>
+        <script>
+            // Use AJAX to retrieve the records from the PHP API
+            $(document).ready(function() {
+                $.ajax({
+                    url: '/var/get_items.php',
+                    dataType: 'json',
+                    success: function(data) {
+                        // Loop through the records and add them to the table
+                        var item_record = '';
+                        $.each(data, function(index, record) {
+                            item_record += '<tr>';
+                            item_record += '<td>#' + record.id + '</td>';
+                            item_record += '<td>' + record.name + '</td>';
+                            item_record += '<td>' + record.quantity + '</td>';
+                            item_record += '<td class="w3-right">CHF ' + record.price + '.-</td>';
+                            item_record += '</tr>';
+                        });
+                        $('#records').append(item_record);
+                    }
+                });
+            });
+        </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <br>
+        <div class="w3-container" style="max-width: 1200px;">
+            <div class="w3-display-container">
+                <h3 class="w3-display-left">Invento - Inventory Table</h3>
+                <p class="w3-display-right">Date and Time: <span id="datetime"></span></p>
+            </div>
+            <br> <br>
+        <table id="records" class="w3-table w3-card w3-striped">
+            <tbody>
+            <tr style="background-color:#F0B90B">
+                <th>ID</th>
+                <th>Item Name</th>
+                <th>Qty</th>
+                <th class="w3-right">Price</th>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+        <script>
+            function printPage() {
+                window.print();
+            }
+            window.onload = function() {
+                setTimeout(printPage, 2000);
+            }
+            function updateTime() {
+                const now = new Date();
+                const datetime = document.getElementById('datetime');
+                datetime.innerHTML = now.toLocaleString();
+            }
+            setInterval(updateTime, 1000);
+        </script>
+    </body>
+</html>

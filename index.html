@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>invento</title>
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/css/w3css.css">
+        <link rel="stylesheet" href="/css/custom.css">
+    </head>
+    <body>
+    <!--- Conteiner with max width --->
+    <div class="w3-container" style="max-width: 1200px;">
+        <!--- Navbar --->
+        <div class="w3-bar w3-large w3-round w3-card w3-dark-gray w3-margin-bottom w3-margin-top">
+            <a href="/" class="w3-bar-item w3-button blackhover"><img src="/img/favicon.ico"><b> invento</b></a>
+            <a href="/" class="w3-bar-item w3-button blackhover">Home</a>
+            <a href="/var/info.html" class="w3-bar-item w3-button blackhover">Info</a>
+            <a href="/var/export.html" class="w3-bar-item w3-button blackhover" target="_blank">Export as PDF</a>
+        </div>
+        <!--- Statistics --->
+        <h3>Statistics</h3>
+        <div class="w3-row-padding" style="margin:0 -16px">
+            <div class="w3-third">
+                <div class="w3-card w3-round w3-container w3-blue w3-margin-bottom"><div class="w3-container w3-right"><h3 id="items_count"></h3></div><h3>Different items</h3></div>
+            </div>
+            <div class="w3-third">
+                <div class="w3-card w3-round w3-container w3-blue w3-margin-bottom"><div class="w3-container w3-right"><h3 id="item_sumprice"></h3></div><h3>Total Value</h3></div>
+            </div>
+            <div class="w3-third">
+                <div class="w3-card w3-round w3-container w3-blue w3-margin-bottom"><div class="w3-container w3-right"><h3><script>
+                    function getCookie(name) {
+                        var value = "; " + document.cookie;
+                        var parts = value.split("; " + name + "=");
+                        if (parts.length == 2) return parts.pop().split(";").shift();
+                    }
+                    document.write(getCookie("session_added"));
+                </script></h3></div><h3>Session added</h3></div>
+            </div>
+        </div>
+        <div class="w3-row-padding" style="margin:0 -16px">
+            <!--- Tabelle --->
+            <div class="w3-twothird">
+                <h3>Inventory</h3>
+                <table id="items_list" class="w3-table w3-card w3-round w3-striped">
+                    <tbody>
+                        <tr style="background-color:#F0B90B">
+                            <th style="border-top-left-radius:4px">ID</th>
+                            <th>Item Name</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th class="w3-right-align" style="border-top-right-radius:4px">CRUD</th>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--- Formular --->
+            <div class="w3-third">
+                <h3>Add entry</h3>
+                <div class="w3-card w3-round">
+                    <div class="w3-container w3-dark-grey" style="border-top-right-radius:4px; border-top-left-radius:4px; height: 39px; padding: 9px; padding-left: 14px">
+                        <b>Add a new item</b>
+                    </div>
+                    <form class="w3-container w3-round" action="/script.php" method="post">
+                        <input type="hidden" name="perform_request" value="insert_request">
+                        <p>
+                            <label for="item_name_form">Item Name</label>
+                            <input name="item_name_form" id="item_name_form" class="w3-input w3-border w3-round" type="text" placeholder="Apple iPhone 13" maxlength="64" required>
+                            <label style="color:grey" class="w3-small">Text</label></p>
+
+
+
+                        <div class="w3-row-padding" style="margin:0 -16px">
+                            <div class="w3-half">
+                                <p>
+                                    <label for="item_quantity_form">Quantity</label>
+                                    <input name="item_quantity_form" id="item_quantity_form" class="w3-input w3-border w3-round" type="number" min="0" max="1000000" step="1" placeholder="5" pattern="^[0-9]+$" required>
+                                    <label style="color:grey" class="w3-small">Nr.</label></p>
+                            </div>
+                            <div class="w3-half">
+                                <p>
+                                    <label for="item_price_form">Price</label>
+                                    <input name="item_price_form" id="item_price_form" class="w3-input w3-border w3-round" type="text" placeholder="15.50" pattern="^[0-9]*(\.[0-9]{0,2})?$" required>
+                                    <label style="color:grey" class="w3-small">Nr.</label></p>
+                            </div>
+                        </div>
+                        <p><button type="submit" class="w3-button w3-green w3-round greenhover" style="left: 0px; right: 0px; width: 100%">Add Item</button></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--- Scripts --->
+    <script src="js/jquery.min.js"></script>
+    <!--- Obtain data from php api to fill up table --->
+    <script>
+        // Use AJAX to retrieve the records from the PHP API
+        $(document).ready(function() {
+            $.ajax({
+                url: 'var/get_items.php',
+                dataType: 'json',
+                success: function(data) {
+                    // Loop through the records and add them to the table
+                    var item_record = '';
+                    $.each(data, function(index, record) {
+                        item_record += '<tr>';
+                        item_record += '<td><b>#' + record.id + '</b></td>';
+                        item_record += '<td>' + record.name + '</td>';
+                        item_record += '<td>' + record.quantity + '</td>';
+                        item_record += '<td>CHF ' + record.price + '.-</td>';
+                        item_record +=  '<td class="w3-right-align">     <form style="display: inline-block;" method="get" action="/var/edit_item.php"> <input type="hidden" name="form_edit_id" value="'+ record.id +'"><input type="hidden" name="form_edit_name" value="'+ record.name +'"><input type="hidden" name="form_edit_quantity" value="'+ record.quantity +'"><input type="hidden" name="form_edit_price" value="'+ record.price +'">  <button class="w3-button w3-green w3-round w3-tiny w3-padding-small greenhover">E</button> </form>                <form style="display: inline-block;" method="post" action="script.php"> <input type="hidden" name="perform_request" value="delete_request"> <input type="hidden" name="form_delete_id" value="'+ record.id +'"> <button type="submit" class="w3-button w3-red w3-round w3-tiny w3-padding-small redhover">X</button></form></td>'
+                        item_record += '</tr>';
+                    });
+                    $('#items_list').append(item_record);
+                    var count = data.length;
+                    // Append the count to the #items_count element
+                    $('#items_count').append(count);
+
+                    var totalPrice = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        totalPrice = totalPrice + parseFloat(data[i].quantity) * parseFloat(data[i].price);
+                    }
+                    // Display the total price
+                    $('#item_sumprice').text("CHF " + totalPrice + ".-");
+
+                   }
+            });
+        });
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+    </script>
+    </body>
+</html>
